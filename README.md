@@ -53,7 +53,7 @@ class ArticleViewSet(
 ):
     queryset = Article.objects.all()
     
-    def get_reject_kwargs(self):
+    def get_publish_kwargs(self):
         return {
             'publisher_address': self.request.data.get('publisher_address', ''),
         }
