@@ -3,12 +3,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='drf-fsm-transitions',
-    version='0.2.0',
+    name='djangorestframework-fsm',
+    version='0.1.0',
     description='Automatically hook your Django-FSM transitions up to Django REST Framework',
-    author='Jacob Haslehurst',
-    author_email='jacob@haslehurst.net',
-    url='https://github.com/hzy/drf-fsm-transitions',
+    author='Ahmed Kamal',
+    author_email='27madkamal@gmail.com',
+    url='https://github.com/27medkamal/djangorestframework-fsm',
     packages=find_packages(),
-    install_requires=['django', 'django_fsm', 'djangorestframework']
+    install_requires=['django', 'django_fsm', 'djangorestframework'],
 )
