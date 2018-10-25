@@ -3,6 +3,8 @@ djangorestframework-fsm
 
 Automatically hook your Django-FSM transitions up to Django REST Framework
 
+Based on [drf-fsm-transitions](https://github.com/jacobh/drf-fsm-transitions) which is very outdated and does not support a lot of the functionality described below
+
 ## Installation
 
 ```bash
@@ -27,6 +29,8 @@ class ArticleViewSet(
 ):
     queryset = Article.objects.all()
 ```
+
+You can customise the field name as show above. By default, it uses `state`
 
 if `Article` had 2 transitions, `delete` and `publish`, the following API calls would be set up
 
