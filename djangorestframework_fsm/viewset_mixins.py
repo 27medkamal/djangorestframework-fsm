@@ -46,7 +46,10 @@ def get_transition_viewset_method(transition_name):
         return Response(serializer.data)
 
     transition_action.__name__ = transition_name
-    transition_action.mapping = dict.fromkeys(transition_action.mapping, transition_name)
+    try:
+        transition_action.mapping = dict.fromkeys(transition_action.mapping, transition_name)
+    except AttributeError:
+        pass
     return transition_action
 
 
