@@ -40,7 +40,7 @@ if `Article` had 2 transitions, `delete` and `publish`, the following API calls 
 
 In addition, a possible transitions endpoint is provided
 
-- `POST /api/article/1234/possible-transitions/` -> returns the transitions that satisfy fsm's `can_proceed`
+- `GET /api/article/1234/possible-transitions/` -> returns the transitions that satisfy fsm's `can_proceed`
 
 ### Custom transition arguments
 
