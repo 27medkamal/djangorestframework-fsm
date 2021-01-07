@@ -11,9 +11,6 @@ from rest_framework.response import Response
 def get_transition_viewset_method(transition_name):
     """Create a viewset method for the provided `transition_name` """
 
-    url = transition_name.replace('_', '-')
-
-    @action(methods=['POST'], detail=True, url_name=url, url_path=url)
     def transition_action(self, request, *args, **kwargs):
         instance = self.get_object()
         transition_method = getattr(instance, transition_name)
@@ -80,10 +77,13 @@ def get_drf_fsm_mixin(Model, fieldname='state'):
     transition_names = set(x.name for x in transitions)
 
     for transition_name in transition_names:
+        url = transition_name.replace('_', '-')
         setattr(
             Mixin,
             transition_name,
-            get_transition_viewset_method(transition_name),
+            action(methods=['POST'], detail=True, url_name=url, url_path=url)(
+                get_transition_viewset_method(transition_name)
+            ),
         )
 
     return Mixin
