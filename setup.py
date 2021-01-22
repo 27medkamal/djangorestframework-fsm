@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='djangorestframework-fsm',
-    version='0.1.2',
+    version='0.1.3',
     description='Automatically hook your Django-FSM transitions up to Django REST Framework',
     author='Ahmed Kamal',
     author_email='27madkamal@gmail.com',
