@@ -75,6 +75,23 @@ class ArticleViewSet(
     save_after_transition = False
 ```
 
+### Access to `request` inside transitions
+
+If `request` parameter is defined as one of transition callable parameters, then request object will be passed to the transition callable.
+
+### Customized response
+
+To have customied response, add transition name to `return_result_of` attribute and return your desired response from your transittion callable.
+
+```python
+class ArticleViewSet(
+    get_drf_fsm_mixin(Article),
+    viewsets.ModelViewSet,
+):
+    queryset = Article.objects.all()
+    return_result_of = ["foo_transition"]
+```
+
 ### Permissions
 
 Custom permissions should be defined on the model's transition method

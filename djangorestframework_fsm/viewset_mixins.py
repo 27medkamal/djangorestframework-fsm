@@ -26,10 +26,15 @@ def get_transition_viewset_method(transition_name):
         else:
             transition_kwargs = {}
 
-        if 'by' in inspect.signature(transition_method).parameters.keys() and 'by' not in transition_kwargs:
+        signature = inspect.signature(transition_method)
+
+        if 'by' in signature.parameters and 'by' not in transition_kwargs:
             transition_kwargs['by'] = self.request.user
 
-        transition_method(**transition_kwargs)
+        if 'request' in signature.parameters and 'request' not in transition_kwargs:
+            transition_kwargs['request'] = self.request
+
+        result = transition_method(**transition_kwargs)
 
         if self.save_after_transition:
             instance.save()
@@ -38,6 +43,9 @@ def get_transition_viewset_method(transition_name):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
+
+        if transition_name in self.return_result_of:
+            return Response(result)
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -59,6 +67,7 @@ def get_drf_fsm_mixin(Model, fieldname='state'):
 
     class Mixin(object):
         save_after_transition = True
+        return_result_of = []
 
         @action(methods=['GET'], detail=True, url_name='possible-transitions', url_path='possible-transitions')
         def possible_transitions(self, request, *args, **kwargs):
