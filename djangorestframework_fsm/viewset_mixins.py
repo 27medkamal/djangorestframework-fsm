@@ -21,6 +21,9 @@ def get_transition_viewset_method(transition_name):
         if not has_transition_perm(transition_method, self.request.user):
             raise exceptions.PermissionDenied
 
+        if transition_name in self.excluded_transitions:
+            raise exceptions.PermissionDenied
+
         if hasattr(self, 'get_{0}_kwargs'.format(transition_name)):
             transition_kwargs = getattr(self, 'get_{0}_kwargs'.format(transition_name))()
         else:
@@ -68,6 +71,7 @@ def get_drf_fsm_mixin(Model, fieldname='state'):
     class Mixin(object):
         save_after_transition = True
         return_result_of = []
+        excluded_transitions = []
 
         @action(methods=['GET'], detail=True, url_name='possible-transitions', url_path='possible-transitions')
         def possible_transitions(self, request, *args, **kwargs):
@@ -77,7 +81,7 @@ def get_drf_fsm_mixin(Model, fieldname='state'):
                     'transitions': [
                         trans.name.replace('_', '-')
                         for trans in getattr(instance, 'get_available_{}_transitions'.format(fieldname))()
-                        if trans.has_perm(instance, request.user)
+                        if trans.has_perm(instance, request.user) and (trans.name not in self.excluded_transitions)
                     ]
                 },
             )

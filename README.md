@@ -79,6 +79,18 @@ class ArticleViewSet(
 
 If `request` parameter is defined as one of transition callable parameters, then request object will be passed to the transition callable.
 
+### Excluded transitions
+To exclude some transitions to be exposed, add transition name to `excluded_transitions` attribute.
+
+```python
+class ArticleViewSet(
+    get_drf_fsm_mixin(Article),
+    viewsets.ModelViewSet,
+):
+    queryset = Article.objects.all()
+    excluded_transitions = ["foo_transition"]
+```
+
 ### Customized response
 
 To have customied response, add transition name to `return_result_of` attribute and return your desired response from your transittion callable.
