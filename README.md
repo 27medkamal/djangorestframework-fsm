@@ -91,6 +91,18 @@ class ArticleViewSet(
     excluded_transitions = ["foo_transition"]
 ```
 
+### Public transitions
+To have whitlisted/public transitions to be exposed, add transition name to `public_transitions` attribute.
+
+```python
+class ArticleViewSet(
+    get_drf_fsm_mixin(Article),
+    viewsets.ModelViewSet,
+):
+    queryset = Article.objects.all()
+    public_transitions = ["public_transition"]
+```
+
 ### Customized response
 
 To have customied response, add transition name to `return_result_of` attribute and return your desired response from your transittion callable.
