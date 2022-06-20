@@ -75,6 +75,47 @@ class ArticleViewSet(
     save_after_transition = False
 ```
 
+### Access to `request` inside transitions
+
+If `request` parameter is defined as one of transition callable parameters, then request object will be passed to the transition callable.
+
+### Excluded transitions
+To exclude some transitions to be exposed, add transition name to `excluded_transitions` attribute.
+
+```python
+class ArticleViewSet(
+    get_drf_fsm_mixin(Article),
+    viewsets.ModelViewSet,
+):
+    queryset = Article.objects.all()
+    excluded_transitions = ["foo_transition"]
+```
+
+### Public transitions
+To have whitlisted/public transitions to be exposed, add transition name to `public_transitions` attribute.
+
+```python
+class ArticleViewSet(
+    get_drf_fsm_mixin(Article),
+    viewsets.ModelViewSet,
+):
+    queryset = Article.objects.all()
+    public_transitions = ["public_transition"]
+```
+
+### Customized response
+
+To have customied response, add transition name to `return_result_of` attribute and return your desired response from your transittion callable.
+
+```python
+class ArticleViewSet(
+    get_drf_fsm_mixin(Article),
+    viewsets.ModelViewSet,
+):
+    queryset = Article.objects.all()
+    return_result_of = ["foo_transition"]
+```
+
 ### Permissions
 
 Custom permissions should be defined on the model's transition method

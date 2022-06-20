@@ -21,15 +21,26 @@ def get_transition_viewset_method(transition_name):
         if not has_transition_perm(transition_method, self.request.user):
             raise exceptions.PermissionDenied
 
+        if transition_name in self.excluded_transitions:
+            raise exceptions.PermissionDenied
+
+        if self.public_transitions and (transition_name not in self.public_transitions):
+            raise exceptions.PermissionDenied
+
         if hasattr(self, 'get_{0}_kwargs'.format(transition_name)):
             transition_kwargs = getattr(self, 'get_{0}_kwargs'.format(transition_name))()
         else:
             transition_kwargs = {}
 
-        if 'by' in inspect.signature(transition_method).parameters.keys() and 'by' not in transition_kwargs:
+        signature = inspect.signature(transition_method)
+
+        if 'by' in signature.parameters and 'by' not in transition_kwargs:
             transition_kwargs['by'] = self.request.user
 
-        transition_method(**transition_kwargs)
+        if 'request' in signature.parameters and 'request' not in transition_kwargs:
+            transition_kwargs['request'] = self.request
+
+        result = transition_method(**transition_kwargs)
 
         if self.save_after_transition:
             instance.save()
@@ -38,6 +49,9 @@ def get_transition_viewset_method(transition_name):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
+
+        if transition_name in self.return_result_of:
+            return Response(result)
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -59,6 +73,9 @@ def get_drf_fsm_mixin(Model, fieldname='state'):
 
     class Mixin(object):
         save_after_transition = True
+        return_result_of = []
+        excluded_transitions = []
+        public_transitions = []
 
         @action(methods=['GET'], detail=True, url_name='possible-transitions', url_path='possible-transitions')
         def possible_transitions(self, request, *args, **kwargs):
@@ -68,7 +85,7 @@ def get_drf_fsm_mixin(Model, fieldname='state'):
                     'transitions': [
                         trans.name.replace('_', '-')
                         for trans in getattr(instance, 'get_available_{}_transitions'.format(fieldname))()
-                        if trans.has_perm(instance, request.user)
+                        if trans.has_perm(instance, request.user) and (trans.name not in self.excluded_transitions) and (trans.name in (self.public_transitions or [trans.name]))
                     ]
                 },
             )
